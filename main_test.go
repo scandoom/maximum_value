@@ -5,17 +5,21 @@ import (
 )
 
 func TestGenerateRandomElementsNormal(t *testing.T) {
-	for i := 2; i < CHUNKS; i++ {
-		data := generateRandomElements(i)
-		if len(data) != i {
-			t.Errorf("Expected leight %d, got %d", i, len(data))
+	tests := []int{2, 3, 10000, 8, SIZE, SIZE - 1}
+
+	for _, test := range tests {
+		data := generateRandomElements(test)
+		if len(data) != test {
+			t.Errorf("Expected leight %d, got %d", test, len(data))
 		}
 	}
 }
 
 func TestGenerateRandomElementsInvalid(t *testing.T) {
-	for j := -1; j < 2; j++ {
-		data := generateRandomElements(j)
+	tests := []int{-1, 0, 1}
+
+	for _, test := range tests {
+		data := generateRandomElements(test)
 
 		if data != nil {
 			t.Errorf("error: data not nil")
@@ -24,13 +28,24 @@ func TestGenerateRandomElementsInvalid(t *testing.T) {
 }
 
 func TestMaximumNormal(t *testing.T) {
-	data := []int{3, 78, 2, 8, 99, 98, 801}
-	max := 801
-
-	countMax := maximum(data)
-	if max != countMax {
-		t.Errorf("error: count not maximum")
+	tests := []struct {
+		data []int
+		max  int
+	}{
+		{[]int{2, 3, 78, 2, 7, 99, 98, 801}, 801},
+		{[]int{1, 110}, 110},
+		{[]int{2, 0, 4}, 4},
+		{[]int{5, 0}, 5},
 	}
+
+	for _, test := range tests {
+		countMax := maximum(test.data)
+
+		if test.max != countMax {
+			t.Errorf("error: count not maximum")
+		}
+	}
+
 }
 
 func TestMaximumEmpty(t *testing.T) {

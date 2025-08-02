@@ -43,11 +43,6 @@ func maximum(data []int) int {
 		}
 	}
 
-	if maxCount <= 0 {
-		fmt.Println("error: maxCount <= 0")
-		return 0
-	}
-
 	return maxCount
 	// ваш код здесь
 }
@@ -60,17 +55,18 @@ func maxChunks(data []int) int {
 	}
 
 	var wg sync.WaitGroup
-	var mu sync.RWMutex
 
 	wg.Add(8)
 
-	var maxData []int
+	maxData := make([]int, CHUNKS)
 
 	for i := 0; i < CHUNKS; i++ {
-		v := len(data) / CHUNKS
-		if len(data)%CHUNKS != 0 {
+		if len(data) < CHUNKS {
 			fmt.Println("error: CHUNKS not correct")
+			return 0
 		}
+
+		v := len(data) / CHUNKS
 
 		partData := data[i*v : i*v+v]
 		if len(partData) <= 1 {
@@ -81,32 +77,24 @@ func maxChunks(data []int) int {
 		go func(data []int) {
 			defer wg.Done()
 
-			var count = 0
-			for _, j := range data {
-				if j > count {
-					count = j
-				}
-			}
+			count := maximum(data)
 
 			if count == 0 {
 				fmt.Println("error: count = 0")
 				return
 			}
-			mu.Lock()
-			maxData = append(maxData, count)
-			mu.Unlock()
+
+			maxData[i] = count
 
 		}(partData)
-
 	}
 
 	wg.Wait()
 
-	maxCount := 0
-	for _, j := range maxData {
-		if j > maxCount {
-			maxCount = j
-		}
+	maxCount := maximum(maxData)
+	if maxCount == 0 {
+		fmt.Println("errror: maxCount = 0")
+		return 0
 	}
 
 	return maxCount
