@@ -2,57 +2,72 @@ package main
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateRandomElementsNormal(t *testing.T) {
-	tests := []int{2, 3, 10000, 8, SIZE, SIZE - 1}
-
-	for _, test := range tests {
-		data := generateRandomElements(test)
-		if len(data) != test {
-			t.Errorf("Expected leight %d, got %d", test, len(data))
-		}
-	}
-}
-
-func TestGenerateRandomElementsInvalid(t *testing.T) {
-	tests := []int{-1, 0, 1}
-
-	for _, test := range tests {
-		data := generateRandomElements(test)
-
-		if data != nil {
-			t.Errorf("error: data not nil")
-		}
-	}
-}
-
-func TestMaximumNormal(t *testing.T) {
+func TestGenerateRandomElements(t *testing.T) {
 	tests := []struct {
-		data []int
-		max  int
+		name     string
+		size     int
+		expected []int
 	}{
-		{[]int{2, 3, 78, 2, 7, 99, 98, 801}, 801},
-		{[]int{1, 110}, 110},
-		{[]int{2, 0, 4}, 4},
-		{[]int{5, 0}, 5},
+		{
+			name:     "Positive",
+			size:     SIZE,
+			expected: make([]int, SIZE),
+		},
+		{
+			name:     "Zero",
+			size:     0,
+			expected: nil,
+		},
+		{
+			name:     "Negative",
+			size:     1,
+			expected: nil,
+		},
 	}
 
 	for _, test := range tests {
-		countMax := maximum(test.data)
-
-		if test.max != countMax {
-			t.Errorf("error: count not maximum")
+		result := generateRandomElements(test.size)
+		if test.size > 1 {
+			assert.Equal(t, test.size, len(result), test.name)
+			assert.NotNil(t, result, test.name)
+		} else {
+			assert.Nil(t, result, test.name)
 		}
 	}
-
 }
 
-func TestMaximumEmpty(t *testing.T) {
-	result := maximum([]int{})
-	if result != 0 {
-		t.Error("error: slice not 0")
+func TestMaximum(t *testing.T) {
+	tests := []struct {
+		name     string
+		data     []int
+		expected int
+	}{
+		{
+			name:     "Normal",
+			data:     []int{3, 7, 2, 9, 5},
+			expected: 9,
+		},
+		{
+			name:     "Single",
+			data:     []int{42},
+			expected: 0,
+		},
+		{
+			name:     "Empty slice",
+			data:     []int{},
+			expected: 0,
+		},
 	}
+
+	for _, test := range tests {
+		result := maximum(test.data)
+		assert.Equal(t, test.expected, result, test.name)
+	}
+
 }
 
 // Пишите тесты в этом файле

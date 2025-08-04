@@ -56,20 +56,19 @@ func maxChunks(data []int) int {
 
 	var wg sync.WaitGroup
 
-	wg.Add(8)
+	wg.Add(CHUNKS)
 
 	maxData := make([]int, CHUNKS)
 
-	for i := 0; i < CHUNKS; i++ {
-		if len(data) < CHUNKS {
-			fmt.Println("error: CHUNKS not correct")
-			return 0
-		}
+	if len(data) < CHUNKS || len(data)%CHUNKS != 0 {
+		return maximum(data)
+	}
 
+	for i := 0; i < CHUNKS; i++ {
 		v := len(data) / CHUNKS
 
 		partData := data[i*v : i*v+v]
-		if len(partData) <= 1 {
+		if len(partData) < 2 {
 			fmt.Println("error: data < 1")
 			return 0
 		}
@@ -77,27 +76,14 @@ func maxChunks(data []int) int {
 		go func(data []int) {
 			defer wg.Done()
 
-			count := maximum(data)
-
-			if count == 0 {
-				fmt.Println("error: count = 0")
-				return
-			}
-
-			maxData[i] = count
+			maxData[i] = maximum(partData)
 
 		}(partData)
 	}
 
 	wg.Wait()
 
-	maxCount := maximum(maxData)
-	if maxCount == 0 {
-		fmt.Println("errror: maxCount = 0")
-		return 0
-	}
-
-	return maxCount
+	return maximum(maxData)
 
 }
 
@@ -121,4 +107,5 @@ func main() {
 	elapsed = time.Since(start).Microseconds()
 
 	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d ms\n", max, elapsed)
+
 }
