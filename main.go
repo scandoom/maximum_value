@@ -60,18 +60,20 @@ func maxChunks(data []int) int {
 
 	maxData := make([]int, CHUNKS)
 
-	if len(data) < CHUNKS || len(data)%CHUNKS != 0 {
+	if len(data) < CHUNKS {
 		return maximum(data)
 	}
 
 	for i := 0; i < CHUNKS; i++ {
 		v := len(data) / CHUNKS
+		beginningChunk := i * v
+		endChunk := beginningChunk + v
 
-		partData := data[i*v : i*v+v]
-		if len(partData) < 2 {
-			fmt.Println("error: data < 1")
-			return 0
+		if i == CHUNKS-1 {
+			endChunk = len(data)
 		}
+
+		partData := data[beginningChunk:endChunk]
 
 		go func(data []int) {
 			defer wg.Done()
